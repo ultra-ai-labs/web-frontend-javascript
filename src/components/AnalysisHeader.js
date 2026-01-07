@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Input, InputAdornment, Button, Row, Space} from 'tdesign-react';
 import dyIcon from "../public/dy.svg";
 import xhsIcon from "../public/xhs.svg";
@@ -18,7 +18,8 @@ const AnalysisHeader = ({
                             gotoReply,
                             activeMode,
                             taskList,
-                            setTaskList
+                            setTaskList,
+                            fetchTasks
                         }) => {
     const handleDownload = () => {
         getTaskIdAnalysisResultApi(currentTaskId).then(data => {
@@ -46,6 +47,8 @@ const AnalysisHeader = ({
         setTaskList(changeTaskList);
     }, [analysisState])
 
+    const [btnLoading, setBtnLoading] = useState(false);
+
     return (
         <Row style={{width: "100%"}}>
             <Space align={"center"}>
@@ -65,12 +68,43 @@ const AnalysisHeader = ({
                 </InputAdornment>
                 <Button
                     style={{marginLeft: "10px"}}
-                    // onClick={progress === 100 ? handleDownload : () => handleAnalysis(currentTaskId)}
-                    onClick={progress === 100 ? activeMode === '2' ? handleDownload : gotoReply : () => handleAnalysis(currentTaskId)}
+                    onClick={async () => {
+                        // determine action
+                        if (progress === 100) {
+                            if (activeMode === '2') {
+                                handleDownload();
+                            } else {
+                                gotoReply();
+                            }
+                        } else {
+                            handleAnalysis(currentTaskId);
+                        }
+
+                        // show spinner, wait 3s, then refresh task list via fetchTasks
+                        try {
+                            setBtnLoading(true);
+                            await new Promise(r => setTimeout(r, 3000));
+                            if (typeof fetchTasks === 'function') {
+                                await fetchTasks();
+                                const stored = localStorage.getItem('tasks');
+                                if (stored) setTaskList(JSON.parse(stored));
+                            }
+                        } catch (e) {
+                            console.error('Failed to refresh task list', e);
+                        } finally {
+                            setBtnLoading(false);
+                        }
+                    }}
                     disabled={!analysisAble || commentsTotal === 0}
+                    loading={btnLoading}
                 >
-                    {/*{!analysisAble ? '操作中' : (analysisState === "finish" ? '下载结果' : (analysisState === 'initial' ? '开始分析' : '停止分析'))}*/}
-                    {!analysisAble ? '操作中' : (analysisState === "finish" ? activeMode === '2' ? '下载结果' : '前往私信' : (analysisState === 'initial' ? '开始分析' : '停止分析'))}
+                    {!analysisAble ? '操作中' : (
+                        analysisState === "finish" ? (activeMode === '2' ? '下载结果' : '前往私信') : (
+                            analysisState === 'initial' ? '开始分析' : (
+                                analysisState === 'stopped' ? '▶️ 继续分析' : '停止分析'
+                            )
+                        )
+                    )}
                 </Button>
             </Space>
         </Row>

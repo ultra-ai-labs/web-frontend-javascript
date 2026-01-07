@@ -32,6 +32,7 @@ const AnalysisCommentTable = ({
             commentContent = <span>{comment.评论内容}</span>;
             userNickname = <span>{comment.用户昵称}</span>;
         }
+        const currentIntent = comment.intent_customer || comment['意向客户'];
         return {
             index: index + 1,
             评论时间: comment.评论时间,
@@ -39,7 +40,7 @@ const AnalysisCommentTable = ({
             IP地址: comment.IP地址,
             评论内容: commentContent,
             buttonText: "测试",
-            intent_customer: comment.intent_customer
+            intent_customer: currentIntent
                 ? <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Dropdown
                         options={[
@@ -51,9 +52,9 @@ const AnalysisCommentTable = ({
                             intentChangeHandler(option, comment);
                         }}>
                         <Tag
-                            theme={comment.intent_customer === "是" ? "success" : comment.intent_customer === "不确定" ? "warning" : "default"}
-                            variant={comment.intent_customer === "是" ? 'dark' : 'outline'}>
-                            {comment.intent_customer === "是" ? "高意向" : comment.intent_customer === "不确定" ? "潜在客" : "无意向"}
+                            theme={currentIntent === "是" ? "success" : currentIntent === "不确定" ? "warning" : "default"}
+                            variant={currentIntent === "是" ? 'dark' : 'outline'}>
+                            {currentIntent === "是" ? "高意向" : currentIntent === "不确定" ? "潜在客" : "无意向"}
                         </Tag>
                     </Dropdown>
                 </div>

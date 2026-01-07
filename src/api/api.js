@@ -363,3 +363,53 @@ export async function updateUserInfosApi(data) {
         body: JSON.stringify(data),
     });
 }
+
+// Admin user management APIs (use x-admin-password header)
+async function adminFetch(url, options = {}, adminPwd) {
+    try {
+        options.headers = {
+            ...(options.headers || {}),
+            'x-admin-password': adminPwd || ''
+        };
+        if (!options.headers['Content-Type'] && options.method && options.method !== 'GET') {
+            options.headers['Content-Type'] = 'application/json';
+        }
+        const response = await fetch(url, options);
+        if (response.status === 401) {
+            return { status: 401, msg: 'unauthorized' };
+        }
+        const data = await response.json();
+        return data;
+    } catch (err) {
+        console.error('adminFetch error', err);
+        return null;
+    }
+}
+
+export async function adminGetUserApi(userId, adminPwd) {
+    return adminFetch(`${normalServiceUrl}/user/${userId}`, { method: 'GET' }, adminPwd);
+}
+
+export async function adminCreateUserApi(payload, adminPwd) {
+    return adminFetch(`${normalServiceUrl}/user`, { method: 'POST', body: JSON.stringify(payload) }, adminPwd);
+}
+
+export async function adminUpdateUserApi(userId, payload, adminPwd) {
+    return adminFetch(`${normalServiceUrl}/user/${userId}`, { method: 'PUT', body: JSON.stringify(payload) }, adminPwd);
+}
+
+export async function adminGetUserQuotaApi(userId, adminPwd) {
+    return adminFetch(`${normalServiceUrl}/user/${userId}/quota`, { method: 'GET' }, adminPwd);
+}
+
+export async function adminUpdateUserQuotaApi(userId, payload, adminPwd) {
+    return adminFetch(`${normalServiceUrl}/user/${userId}/quota`, { method: 'PUT', body: JSON.stringify(payload) }, adminPwd);
+}
+
+export async function adminListUsersApi(adminPwd, offset = 0, limit = 100) {
+    return adminFetch(`${normalServiceUrl}/users?offset=${offset}&limit=${limit}`, { method: 'GET' }, adminPwd);
+}
+
+export async function adminDeleteUserApi(userId, adminPwd) {
+    return adminFetch(`${normalServiceUrl}/user/${userId}`, { method: 'DELETE' }, adminPwd);
+}

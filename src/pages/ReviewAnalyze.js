@@ -84,7 +84,7 @@ const ReviewAnalyze = ({ tasks, selectedTask, fetchTasks, SeclectedReply, userSu
         if (taskId !== null && taskId !== undefined) {
             try {
                 await getAnalysisProgressApi(taskId).then(data => {
-                    if (data.msg === "success") {
+                        if (data.msg === "success") {
                         const label = `进度：${data.data.num} / ${data.data.sum}`;
                         setProgressLabel((prevLabel) => (prevLabel !== label ? label : prevLabel));
                         let percentage = 0
@@ -93,7 +93,7 @@ const ReviewAnalyze = ({ tasks, selectedTask, fetchTasks, SeclectedReply, userSu
                             percentage = parseFloat(((data.data.num / data.data.sum) * 100).toFixed(2));
                         }
                         setProgress((prevProgress) => (prevProgress !== percentage ? percentage : prevProgress));
-                        setAnalysisState(data.state)
+                        // remove incorrect state mapping; use data.data.state below
                         setClientNum(data.data.ic_num)
                         if (percentage === 100) {
                             setShouldUpdateProgress(false);
@@ -110,7 +110,12 @@ const ReviewAnalyze = ({ tasks, selectedTask, fetchTasks, SeclectedReply, userSu
                             // setIsButtonDisabled(false);
                             setShouldUpdateProgress(false);
                             setAnalysisState("finish");
-                            fetchTasks().then(setTaskList(JSON.parse(localStorage.getItem('tasks'))))//TODO:优化
+                            fetchTasks().then(() => setTaskList(JSON.parse(localStorage.getItem('tasks'))))//TODO:优化
+                        }
+                        if (data.data.state === 5) {
+                            setShouldUpdateProgress(false);
+                            setAnalysisState("stopped");
+                            fetchTasks().then(() => setTaskList(JSON.parse(localStorage.getItem('tasks'))))
                         }
                         return percentage;
 
@@ -180,26 +185,32 @@ const ReviewAnalyze = ({ tasks, selectedTask, fetchTasks, SeclectedReply, userSu
                         let updatedComments = comment_list.map((comment, index) => {
                             let dynamicFields = {};
                             outputFields.forEach(field => {
+                                let val = comment[field.key];
+                                // 兼容后端返回的中文键名
+                                if (field.key === 'intent_customer' && !val) {
+                                    val = comment['意向客户'];
+                                }
+
                                 if (field.key === 'intent_customer') {
-                                    dynamicFields[field.key] = comment[field.key]
+                                    dynamicFields[field.key] = val
                                         ? <Dropdown
                                             options={[
                                                 { content: '高意向', value: '是' },
                                                 { content: '潜在客', value: '不确定' },
                                                 { content: '无意向', value: '否' }
-                                            ].filter(option => option.value !== comment[field.key])}
+                                            ].filter(option => option.value !== val)}
                                             onClick={(option) => {
                                                 intentChangeHandler(option, comment);
                                             }}>
                                             <Tag
-                                                theme={comment[field.key] === "是" ? "success" : comment[field.key] === "不确定" ? "warning" : "default"}
-                                                variant={comment[field.key] === "是" ? 'dark' : 'outline'}>
-                                                {comment[field.key] === "是" ? "高意向" : comment[field.key] === "不确定" ? "潜在客" : "无意向"}
+                                                theme={val === "是" ? "success" : val === "不确定" ? "warning" : "default"}
+                                                variant={val === "是" ? 'dark' : 'outline'}>
+                                                {val === "是" ? "高意向" : val === "不确定" ? "潜在客" : "无意向"}
                                             </Tag>
                                         </Dropdown>
-                                        : comment[field.key] || '';
+                                        : val || '';
                                 } else {
-                                    dynamicFields[field.key] = comment[field.key] || '';
+                                    dynamicFields[field.key] = val || '';
                                 }
                             });
 
@@ -401,6 +412,7 @@ const ReviewAnalyze = ({ tasks, selectedTask, fetchTasks, SeclectedReply, userSu
     const handleAnalysis = async (taskId) => {
         if (analysisState === 'initial') await startAnalyze(taskId);
         else if (analysisState === 'running') await stopAnalyze(taskId);
+        else if (analysisState === 'stopped') await startAnalyze(taskId);
         fetchTasks().then(setTaskList(JSON.parse(localStorage.getItem('tasks'))))
     }
 
@@ -586,6 +598,7 @@ const ReviewAnalyze = ({ tasks, selectedTask, fetchTasks, SeclectedReply, userSu
                     activeMode={activeMode}
                     taskList={taskList}
                     setTaskList={setTaskList}
+                    fetchTasks={fetchTasks}
                 />
                 {activeMode === '1' && analysisState !== 'finish' &&
                     <AnalysisTemplateDrawer taskId={currentTaskId} onTemplateUse={handleTemplateUse} inputValue={inputValues[currentTaskId]}
