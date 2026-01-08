@@ -65,17 +65,17 @@ const UserManagement = () => {
         else { MessagePlugin.error(res.msg || '更新失败'); }
     };
 
-    // parse strings like '2024-12-31 23:59' or numeric strings into unix timestamp (seconds)
+    // parse strings like '2024-12-31 23:59' or '2024/12/31 23:59' or numeric strings into unix timestamp (13位毫秒级)
     const parseExpireToUnix = (val) => {
         if (val === null || val === undefined || val === '') return null;
         // already numeric (seconds or ms)
         if (/^\d+$/.test(String(val).trim())) {
             const n = Number(String(val).trim());
-            // if looks like milliseconds, convert to seconds
-            return n > 1e12 ? Math.floor(n / 1000) : n;
+            // if looks like seconds (10位), convert to milliseconds (13位)
+            return n < 1e12 ? n * 1000 : n;
         }
         const s = String(val).trim();
-        const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{1,2}))?$/);
+        const m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})(?:[ T](\d{1,2}):(\d{1,2}))?$/);
         if (m) {
             const y = Number(m[1]);
             const mo = Number(m[2]) - 1;
@@ -83,10 +83,10 @@ const UserManagement = () => {
             const hh = Number(m[4] || 0);
             const mm = Number(m[5] || 0);
             const dt = new Date(y, mo, d, hh, mm, 0);
-            if (!isNaN(dt)) return Math.floor(dt.getTime() / 1000);
+            if (!isNaN(dt)) return dt.getTime(); // 返回毫秒级时间戳
         }
         const dt2 = new Date(s.replace(' ', 'T'));
-        if (!isNaN(dt2)) return Math.floor(dt2.getTime() / 1000);
+        if (!isNaN(dt2)) return dt2.getTime(); // 返回毫秒级时间戳
         return null;
     };
 
@@ -95,7 +95,9 @@ const UserManagement = () => {
         try {
             const n = Number(ts);
             if (isNaN(n)) return '';
-            return new Date(n * 1000).toLocaleString();
+            // 如果是10位秒级时间戳，转换为13位毫秒级
+            const ms = n < 1e12 ? n * 1000 : n;
+            return new Date(ms).toLocaleString();
         } catch (e) {
             return '';
         }
