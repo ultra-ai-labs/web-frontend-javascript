@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 const EXTENSION_URL = 'https://iry-1256349444.cos.ap-guangzhou.myqcloud.com/%E5%86%85%E5%AE%B9%E6%94%B6%E9%9B%86%E6%8F%92%E4%BB%B6.zip';
-const validVersion = ['1.6']
+const validVersion = ['1.7']
 
 const CollectionInstructions = () => {
     const [show, setShow] = useState(false);

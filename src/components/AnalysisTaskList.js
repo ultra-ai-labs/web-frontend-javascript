@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Checkbox, Menu, Space, Tooltip} from 'tdesign-react';
-import {CheckCircleIcon, LoadingIcon, PlayCircleIcon} from 'tdesign-icons-react';
+import {CheckCircleIcon, LoadingIcon, PlayCircleIcon, PauseCircleIcon} from 'tdesign-icons-react';
 import dyIcon from '../public/dy.svg';
 import xhsIcon from '../public/xhs.svg'
 
@@ -33,6 +33,15 @@ const AnalysisTaskList = ({mode, taskList, currentTaskId, onTaskClick}) => {
                     theme="default"
                 >
                     <CheckCircleIcon style={{color: '#52c41a'}}/>
+                </Tooltip>;
+            case 'stopped':
+                return <Tooltip
+                    content="已暂停"
+                    destroyOnClose
+                    showArrow
+                    theme="default"
+                >
+                    <PauseCircleIcon style={{color: '#ff85c0'}}/>
                 </Tooltip>;
             default:
                 return null;
