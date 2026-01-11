@@ -118,7 +118,7 @@ const CollectionTaskTable = ({
     }, 0);
 
     useEffect(() => {
-        if (nowLimit > totalLimit) {
+        if (nowLimit >= totalLimit && totalLimit !== 0) {
             setIsCollectAbled(false)
             setIsCollectabled(false)
         } else {

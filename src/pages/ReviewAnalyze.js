@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     Radio,
-    Space, Tag, Row, Col, Tooltip, Dropdown
+    Space, Tag, Row, Col, Tooltip, Dropdown, MessagePlugin
 } from 'tdesign-react';
 import {
     getCommentListByTaskIdApi,
@@ -14,7 +14,8 @@ import {
     getKvApi,
     createKvApi,
     updateKvApi,
-    getXhsApi
+    getXhsApi,
+    getQuote
 } from '../api/api';
 
 import AnalysisCommentTable from '../components/AnalysisCommentTable';
@@ -410,9 +411,22 @@ const ReviewAnalyze = ({ tasks, selectedTask, fetchTasks, SeclectedReply, userSu
     }
 
     const handleAnalysis = async (taskId) => {
-        if (analysisState === 'initial') await startAnalyze(taskId);
+        if (analysisState === 'initial' || analysisState === 'stopped') {
+            try {
+                const quoteResponse = await getQuote();
+                if (quoteResponse && quoteResponse.data) {
+                    const { used_quota, total_quota } = quoteResponse.data;
+                    if (used_quota >= total_quota) {
+                        MessagePlugin.error("分析额度已耗尽，请充值后重试");
+                        return;
+                    }
+                }
+            } catch (err) {
+                console.error("Quota check failed:", err);
+            }
+            await startAnalyze(taskId);
+        }
         else if (analysisState === 'running') await stopAnalyze(taskId);
-        else if (analysisState === 'stopped') await startAnalyze(taskId);
         fetchTasks().then(setTaskList(JSON.parse(localStorage.getItem('tasks'))))
     }
 
