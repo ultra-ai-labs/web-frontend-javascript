@@ -1,9 +1,9 @@
 import CryptoJS from 'crypto-js';
 let modelServiceUrl = 'https://api.coze.cn/open_api/v2/chat';
-let myToken = 'pat_PAgIS0o4LBBfV9SgMGvgSRA684mB4zf8vfpzxbEotjF5f8t3V4ZH5PnU5LhQXf7u'//pat_p9th9D78zNgfMHpdrDMGUmFhZjvY3ZE0uGP0sfZKumfVYMOEWxhyFyf7hx9Ts2KA pat_PAgIS0o4LBBfV9SgMGvgSRA684mB4zf8vfpzxbEotjF5f8t3V4ZH5PnU5LhQXf7u
+let myToken = 'pat_URJWHQUzZqCnNRLV3oEYQCt44t4w3QYezRkAhtFzI9SodwzWUgAciOptMhMkT3im'
 const chatbotMap = {
     "keyword": "7398469657676070947",
-    "template": "7424471959511269391"
+    "template": "7588974730418520115"
 }
 // 检查localStorage中是否已经存在user_id
 const checkAndGenerateUserId = () => {
@@ -39,11 +39,16 @@ const options = {
 };
 
 export async function postChatModel(query, mode) {
+    // 防御性处理：确保 query 至少是空字符串，避免参数丢失
+    const safeQuery = query || '';
+    if (!safeQuery) {
+        console.warn('[postChatModel] query 参数为空，使用默认值');
+    }
     const data = {
         "conversation_id": generateConversationId().toString(),
         "bot_id": chatbotMap[mode],
         "user": checkAndGenerateUserId(),
-        "query": query,
+        "query": safeQuery,
         "stream": false,
     }
     const response = await fetch(`${modelServiceUrl}`, {

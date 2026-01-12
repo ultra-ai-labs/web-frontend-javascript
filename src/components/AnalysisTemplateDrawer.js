@@ -16,7 +16,7 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
     useEffect(() => {
         const fetchTemplateData = async () => {
             try {
-                const data = await getTemplateApi();
+                const data = await getTemplateApi(taskId);
 
                 // 判断模版是否为空
                 if (!data || !data.data) {
@@ -26,29 +26,26 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
                 if (data.data.length === 0) {
                     initialGenerate();
                 } else {
-                    // 判断有没有默认模版并选中填充
-                    const defaultTemplate = data.data.find(template => template.default === 1);
+                    // 数据库中有模板，优先使用localStorage，否则使用第一个模板
+                    const storedData = localStorage.getItem(`${taskId}-template`);
 
-                    if (!defaultTemplate) {
-                        const storedData = localStorage.getItem(`${taskId}-template`);
+                    if (storedData) {
+                        const { additionalInput1, additionalInput2 } = JSON.parse(storedData);
 
-                        if (storedData) {
-                            const { additionalInput1, additionalInput2 } = JSON.parse(storedData);
-
-                            setAdditionalInput1(additionalInput1);
-                            setAdditionalInput2(additionalInput2);
-
-                            // 仅在状态与localStorage数据不一致时调用onTemplateUse
-                            if (additionalInput1 !== storedData.additionalInput1 || additionalInput2 !== storedData.additionalInput2) {
-                                onTemplateUse(additionalInput1, additionalInput2);
-                            }
-                        } else {
-                            initialGenerate();
-                        }
+                        setAdditionalInput1(additionalInput1);
+                        setAdditionalInput2(additionalInput2);
+                        onTemplateUse(additionalInput1, additionalInput2);
                     } else {
-                        setAdditionalInput1(defaultTemplate.service_introduction);
-                        setAdditionalInput2(defaultTemplate.customer_description);
-                        onTemplateUse(defaultTemplate.service_introduction, defaultTemplate.customer_description);
+                        const firstTemplate = data.data[0];
+                        setAdditionalInput1(firstTemplate.service_introduction);
+                        setAdditionalInput2(firstTemplate.customer_description);
+                        onTemplateUse(firstTemplate.service_introduction, firstTemplate.customer_description);
+                        
+                        // 缓存到 localStorage
+                        localStorage.setItem(`${taskId}-template`, JSON.stringify({
+                            additionalInput1: firstTemplate.service_introduction,
+                            additionalInput2: firstTemplate.customer_description
+                        }));
                     }
                 }
 
@@ -69,20 +66,36 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
         setAdditionalInput1('');
         setAdditionalInput2('');
 
-        if (taskId) {
+        if (taskId && currentKeyWord) {
             const data = await postChatModel(currentKeyWord, "template");
             try {
                 if (data.code === 0) {
-                    const jsonData = JSON.parse(data.messages[0].content); // 此处可能出错
-                    setAdditionalInput1(jsonData['我提供的服务介绍']);
-                    setAdditionalInput2(jsonData['我想要的客户描述']);
+                    const jsonData = JSON.parse(data.messages[0].content);
+                    const serviceIntro = jsonData['service_introduction'];
+                    const customerDesc = jsonData['customer_description'];
+                    
+                    setAdditionalInput1(serviceIntro);
+                    setAdditionalInput2(customerDesc);
                     setLoading(false);
 
+                    // 保存到 localStorage
                     localStorage.setItem(`${taskId}-template`, JSON.stringify({
-                        additionalInput1: jsonData['我提供的服务介绍'],
-                        additionalInput2: jsonData['我想要的客户描述']
+                        additionalInput1: serviceIntro,
+                        additionalInput2: customerDesc
                     }));
-                    onTemplateUse(jsonData['我提供的服务介绍'], jsonData['我想要的客户描述']);
+                    
+                    // 保存到后端 analysis_module 表
+                    try {
+                        await createTemplateApi({
+                            task_id: taskId,
+                            service_introduction: serviceIntro,
+                            customer_description: customerDesc
+                        });
+                    } catch (error) {
+                        console.error("Failed to save template to backend:", error);
+                    }
+                    
+                    onTemplateUse(serviceIntro, customerDesc);
                 }
             } catch (error) {
                 console.error("Error parsing JSON:", error);
@@ -97,14 +110,19 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
         setGenerateInput2('')
         setLoading(true);
         let data;
+        const queryValue = inputValue || currentKeyWord || '请描述您的业务';
         if(inputValue){
             data = await postChatModel(inputValue, "template")
+        }else if(currentKeyWord){
+            data = await postChatModel(currentKeyWord, "template")
         }else{
-            data=await postChatModel(currentKeyWord, "template")
+            MessagePlugin.warning('请先选择任务或输入关键词');
+            setLoading(false);
+            return;
         }
         const jsonData = JSON.parse(data.messages[0].content)
-        setGenerateInput1(jsonData['我提供的服务介绍'])
-        setGenerateInput2(jsonData['我想要的客户描述'])
+        setGenerateInput1(jsonData['service_introduction'])
+        setGenerateInput2(jsonData['customer_description'])
         setLoading(false)
     }
 
@@ -137,7 +155,7 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
     };
 
     const handle_select = () => {
-        getTemplateApi().then(data => {
+        getTemplateApi(taskId).then(data => {
             setDrawerVisible(true);
             setTemplates(data.data)
         }).catch(err => console.log(err))
@@ -152,6 +170,7 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
     const handleAddTemplate = async () => {
         if (templates.length < 10) {
             const newTemplate = {
+                task_id: taskId,
                 service_introduction: additionalInput1,
                 customer_description: additionalInput2,
             };
@@ -171,9 +190,9 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
             MessagePlugin.warning('不能删除该模板');
             return;
         }
-        deleteTemplateApi({id}).then(data => {
+        deleteTemplateApi({id, task_id: taskId}).then(data => {
             MessagePlugin.success("删除模板成功")
-            getTemplateApi().then(data => {
+            getTemplateApi(taskId).then(data => {
                 setTemplates(data.data)
             })
         }).catch(err => {
@@ -189,37 +208,6 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
         setTemplates(updatedTemplates);
     };
 
-    const handleSetDefault = async (id) => {
-        let currentDefaultId = null;
-
-        // 找到当前的默认模板ID
-        templates.forEach(template => {
-            if (template.default === 1) {
-                currentDefaultId = template.id;
-            }
-        });
-
-        // 先取消当前的默认模板
-        if (currentDefaultId !== null) {
-            const updatedTemplate = {...templates.find(template => template.id === currentDefaultId), default: 0};
-            updateTemplateApi(updatedTemplate);
-        }
-
-        // 设置新的默认模板
-        const newDefaultTemplate = {...templates.find(template => template.id === id), default: 1};
-        await updateTemplateApi(newDefaultTemplate);
-
-        // 获取更新后的模板列表并设置到状态中
-        const data = await getTemplateApi();
-        setTemplates(data.data);
-        if (additionalInput1 === "" && additionalInput2 === "") {
-            setAdditionalInput1(newDefaultTemplate.customer_description);
-            setAdditionalInput2(newDefaultTemplate.service_introduction);
-            onTemplateUse(newDefaultTemplate.service_introduction, newDefaultTemplate.customer_description)
-        }
-    };
-
-
     const handleUseTemplate = (service_introduction, customer_description) => {
         setAdditionalInput1(service_introduction);
         setAdditionalInput2(customer_description);
@@ -232,14 +220,14 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
     };
 
     const handleUpdateTemplate = async () => {
-        const oldTemplates = await getTemplateApi().then(data => data.data);
+        const oldTemplates = await getTemplateApi(taskId).then(data => data.data);
         let isUpdate = false;
 
         templates.forEach(template => {
             const matchingOldTemplate = oldTemplates.find(oldTemplate => oldTemplate.id === template.id);
             if (matchingOldTemplate && JSON.stringify(matchingOldTemplate) !== JSON.stringify(template)) {
                 isUpdate = true
-                updateTemplateApi(template);
+                updateTemplateApi({...template, task_id: taskId});
             }
         });
         if (isUpdate) MessagePlugin.success("保存模板成功")
@@ -249,7 +237,7 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
         <>
             <Space direction='horizontal' style={{width: '50vw'}}>
                 <Space direction='vertical'>
-                    <div>我提供的服务介绍</div>
+                    <div>我提供的服务介绍：</div>
                     <Textarea
                         placeholder="例如：我是一家植发机构，提供植发服务"
                         autosize={{minRows: 3}}
@@ -260,7 +248,7 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
                     />
                 </Space>
                 <Space direction='vertical'>
-                    <div>我想要的客户描述</div>
+                    <div>我想要的客户描述：</div>
                     <Textarea
                         placeholder="例如：我想要有植发需求的客户"
                         autosize={{minRows: 3}}
@@ -270,7 +258,7 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
                         disabled={loading}
                     />
                 </Space>
-                <Space direction='vertical'>
+                {/* <Space direction='vertical'>
                     <Button type="primary" onClick={handle_select}>
                         我的模版
                     </Button>
@@ -288,8 +276,8 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
                             </div>
                             <Loading loading={loading}>
                                 <Space direction='vertical'>
-                                    <span>我提供的服务介绍：{generateInput1}</span>
-                                    <span>我想要的客户描述：{generateInput2}</span>
+                                    <span>service_intro：{generateInput1}</span>
+                                    <span>customer_desc：{generateInput2}</span>
                                 </Space>
                             </Loading>
                         </>
@@ -328,7 +316,7 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
                         onCancel={() => setModalVisble(false)}
                     >
                     </Dialog>
-                </Space>
+                </Space> */}
             </Space>
             <Drawer
                 visible={drawerVisible}
@@ -355,22 +343,6 @@ const TemplateDrawer = ({onTemplateUse, taskId, currentKeyWord,inputValue}) => {
                             >
                                 删除
                             </Button>
-                            {template.default === 1 ? (
-                                <Button
-                                    theme='success'
-                                    onClick={() => handleSetDefault(template.id)}
-                                    style={{marginLeft: '10px'}}
-                                >
-                                    取消默认
-                                </Button>
-                            ) : (
-                                <Button
-                                    onClick={() => handleSetDefault(template.id)}
-                                    style={{marginLeft: '10px'}}
-                                >
-                                    设为默认
-                                </Button>
-                            )}
                         </Space>
                         <Space direction='vertical' align='center' style={{width: '100%'}}>
                             <Textarea

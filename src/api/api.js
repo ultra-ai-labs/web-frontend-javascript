@@ -209,8 +209,8 @@ export async function postKeyword(data) {
     });
 }
 
-export async function getTemplateApi() {
-    return fetchApi(`${normalServiceUrl}/get_analysis_modules`, {
+export async function getTemplateApi(task_id) {
+    return fetchApi(`${normalServiceUrl}/get_analysis_modules?task_id=${task_id}`, {
         method: 'GET'
     });
 }

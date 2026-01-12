@@ -42,7 +42,13 @@ const ReviewAnalyze = ({ tasks, selectedTask, fetchTasks, SeclectedReply, userSu
     const [inputValues, setInputValues] = useState(getLocalStorageData('inputValues', {}));
     const [currentTaskId, setCurrentTaskId] = useState(() => selectedTask?.task_id ?? getLocalStorageData('selectedTask', taskList.length > 0 ? taskList[0] : null)?.task_id ?? null);//当前taskList中选中的任务
     const [currentPlatform, setCurrentPlatform] = useState(selectedTask ? selectedTask.platform : null);
-    const [currentKeyWord, setCurrentKeyword] = useState(selectedTask ? selectedTask.keyword : null);
+    const [currentKeyWord, setCurrentKeyword] = useState(() => {
+        if (selectedTask) return selectedTask.keyword;
+        const savedTask = getLocalStorageData('selectedTask', null);
+        if (savedTask) return savedTask.keyword;
+        if (taskList.length > 0) return taskList[0].keyword;
+        return '';
+    });
     const [progress, setProgress] = useState(0);
     const [curAnalysisNum, setCurAnalysisNum] = useState(0)
     const [analysisState, setAnalysisState] = useState("initial");//当前分析处于哪一阶段
@@ -644,13 +650,13 @@ const ReviewAnalyze = ({ tasks, selectedTask, fetchTasks, SeclectedReply, userSu
                                 onChange={(v) => setActiveMode(v)}
                                 variant='primary-filled'
                             >
-                                <Tooltip content="只分析筛选意向客户" destroyOnClose showArrow theme="default">
+                                {/* <Tooltip content="只分析筛选意向客户" destroyOnClose showArrow theme="default">
                                     <Radio.Button value="1" className="custom-radio-button">获客模式</Radio.Button>
-                                </Tooltip>
-                                <Tooltip content="分析用户对品牌的情绪、满意度等信息" destroyOnClose showArrow
+                                </Tooltip> */}
+                                {/* <Tooltip content="分析用户对品牌的情绪、满意度等信息" destroyOnClose showArrow
                                     theme="default">
                                     <Radio.Button value="2" className="custom-radio-button">品牌分析</Radio.Button>
-                                </Tooltip>
+                                </Tooltip> */}
                             </Radio.Group>
                         </Col>
                     )}
