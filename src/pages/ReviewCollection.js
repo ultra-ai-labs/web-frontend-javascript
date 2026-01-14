@@ -525,7 +525,7 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
                         onClick={() => setChargeVisible(false)}>取消</Button>}
                     confirmBtn={<Button theme="primary" onClick={() => setChargeVisible(false)}>确认</Button>}
                 />
-                {accountName === '智网识客' && <Tabs placement={'top'} size={'medium'} defaultValue={1}>
+                {accountName === '智擎获客' && <Tabs placement={'top'} size={'medium'} defaultValue={1}>
                     <TabPanel value={1} label="任务管理">
                         <CollectionTaskTable
                             data={tasks}
@@ -545,7 +545,7 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
                         <CollectionMemberList />
                     </TabPanel>
                 </Tabs>}
-                {accountName !== '智网识客' && <CollectionTaskTable
+                {accountName !== '智擎获客' && <CollectionTaskTable
                     data={tasks}
                     fetchTasks={fetchTasks}
                     totalTask={totalTask}
