@@ -58,8 +58,8 @@ function Login() {
                 }}>
 
                     <Row style={{textAlign: "center",marginLeft:58}}>
-                        <img style={{width: "30px", marginLeft: 0, marginTop: 15, marginRight: 10}} src={`${process.env.PUBLIC_URL}/favicon.svg`} alt="logo"/>
-                        <h2 style={{color: "#3491FA"}}>智网识客</h2>
+                        <img style={{width: "30px", marginLeft: 0, marginTop: 15, marginRight: 10}} src={`${process.env.PUBLIC_URL}/favicon.png`} alt="logo"/>
+                        <h2 style={{color: "#3491FA"}}>智擎获客</h2>
                     </Row>
                     <Form statusIcon={true} onSubmit={onSubmit} onReset={onReset} colon={true} labelWidth={0}>
                         <FormItem name="account">

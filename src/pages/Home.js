@@ -175,8 +175,8 @@ function Home() {
                     value={activeTab}
                     logo={<Row>
                         <img style={{width: "30px", marginLeft: 25, marginTop: 15, marginRight: 10}}
-                             src={`${process.env.PUBLIC_URL}/favicon.svg`} alt="logo"/>
-                        <h2 style={{color: "#3491FA"}}>智网识客</h2>
+                             src={`${process.env.PUBLIC_URL}/favicon.png`} alt="logo"/>
+                        <h2 style={{color: "#3491FA"}}>智擎获客</h2>
                     </Row>}
                     onChange={handleTabChange}
                     operations={
