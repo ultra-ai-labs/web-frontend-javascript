@@ -56,7 +56,7 @@ const AnalysisHeader = ({
                     <h2>暂未收集评论</h2>
                 ) : (
                     <Row>
-                        {platformIconMap[currentPlatform]}<h2>&nbsp;{currentKeyWord}&nbsp;{commentsTotal}条</h2>
+                        {/* {platformIconMap[currentPlatform]} */}<h2>&nbsp;{currentKeyWord}&nbsp;{commentsTotal}条</h2>
                     </Row>
                 )}
                 <InputAdornment prepend="我的产品/服务/品牌是" style={{width: "420px", marginLeft: "10px"}}>

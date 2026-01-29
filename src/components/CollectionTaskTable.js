@@ -30,15 +30,15 @@ const CollectionTaskTable = ({
             title: '关键词',
             colKey: 'keyword',
         },
-        {
-            title: '平台',
-            colKey: 'platform',
-            cell: ({ row }) => (
-                // <span>{platformMap[row.platform]}</span>
-                <div style={{ marginTop: 5 }}>{platformIconMap[row.platform] || row.platform}</div>
-            ),
-            // width: 60,
-        },
+        // {
+        //     title: '平台',
+        //     colKey: 'platform',
+        //     cell: ({ row }) => (
+        //         // <span>{platformMap[row.platform]}</span>
+        //         <div style={{ marginTop: 5 }}>{platformIconMap[row.platform] || row.platform}</div>
+        //     ),
+        //     // width: 60,
+        // },
         {
             title: '创建时间',
             colKey: 'create_time',

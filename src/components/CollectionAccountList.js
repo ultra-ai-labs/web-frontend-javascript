@@ -97,18 +97,18 @@ const AccountList = () => {
             ),
             width: "200px"
         },
-        {
-            title: "平台",
-            align: "center",
-            colKey: "platform",
-            cell: ({ row }) => {
-                return (
-                    <Space>
-                        {platformIconMap[row.platform]}
-                    </Space>
-                );
-            }
-        },
+        // {
+        //     title: "平台",
+        //     align: "center",
+        //     colKey: "platform",
+        //     cell: ({ row }) => {
+        //         return (
+        //             <Space>
+        //                 {platformIconMap[row.platform]}
+        //             </Space>
+        //         );
+        //     }
+        // },
         {
             title: "创建时间",
             align: "center",

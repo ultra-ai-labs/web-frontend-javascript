@@ -61,12 +61,11 @@ const AnalysisTaskList = ({mode, taskList, currentTaskId, onTaskClick}) => {
 
     useEffect(() => {//AnalysisTaskList筛选的checkBox
         if (taskList.length) {
-            if (checkedOptions.length === 2 || checkedOptions.length === 0) {
-                setShowTaskList(taskList)
-            } else if (checkedOptions[0] === 'dy') {
-                setShowTaskList(taskList.filter(task => task.platform === 'dy'))
-            } else if (checkedOptions[0] === 'xhs') {
-                setShowTaskList(taskList.filter(task => task.platform === 'xhs'))
+            const platformFilteredList = taskList.filter(task => task.platform !== 'xhs');
+            if (checkedOptions.length === 1 && checkedOptions[0] === 'dy') {
+                setShowTaskList(platformFilteredList)
+            } else {
+                setShowTaskList(platformFilteredList)
             }
         }
         // eslint-disable-next-line
@@ -76,16 +75,7 @@ const AnalysisTaskList = ({mode, taskList, currentTaskId, onTaskClick}) => {
         <Menu expandType="normal" theme="light"
               logo={mode === "analyze"
                   ? <h2>任务列表 共{taskList.length}个</h2>
-                  : <Checkbox.Group
-                      options={[
-                          {label: '抖音', value: 'dy'},
-                          {label: '小红书', value: 'xhs'},
-                      ]}
-                      value={checkedOptions}
-                      onChange={handleCheckboxChange}
-                      style={{marginLeft: '30px'}}
-
-                  />}
+                  : <h2 style={{marginLeft: '30px'}}>任务列表</h2>}
               value={`task-${currentTaskId}`}
               style={{height: "90vh", width: "270px"}}>
             {showTaskList.map((item) => (
@@ -97,7 +87,7 @@ const AnalysisTaskList = ({mode, taskList, currentTaskId, onTaskClick}) => {
                 >
                     <Space style={{width: '200px', justifyContent: 'space-between'}} align='center'>
                         <p style={{width: '150px'}}>{item.keyword}</p>
-                        <div style={{marginTop: "10px"}}>{platformIconMap[item.platform] || item.platform}</div>
+                        {/* <div style={{marginTop: "10px"}}>{platformIconMap[item.platform] || item.platform}</div> */}
                     </Space>
                 </MenuItem>
             ))}

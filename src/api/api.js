@@ -1,13 +1,13 @@
 const domainName = window.location.hostname;
-let loginService = "http://localhost:3001"
-let normalServiceUrl = "http://localhost:3001"
+let loginService = "http://43.161.219.41:3001"
+let normalServiceUrl = "http://43.161.219.41:3001"
 let chatServiceUrl = "http://127.0.0.1:3010"
 let modelServiceUrl = 'https://zg-cloud-model-service.replit.app';
 let wxpayServiceUrl = 'https://wx-pay-116838-7-1320884641.sh.run.tcloudbase.com'
 let goBackServiceUrl = 'https://golang-qo9o-116838-7-1320884641.sh.run.tcloudbase.com'
 
 if (domainName === "localhost" || domainName === "dev.zcloudapp.com") {
-    normalServiceUrl = "http://localhost:3001"
+    normalServiceUrl = "http://43.161.219.41:3001"
 }
 
 export async function login(username, password) {

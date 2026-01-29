@@ -92,12 +92,13 @@ function Home() {
                     ...task,
                     create_time: formatDate(task.create_time),
                 }));
-                const allTasks = [...modifiedTaskList, ...allModifiedTaskList];
+                const allTasks = [...modifiedTaskList, ...allModifiedTaskList].filter(task => task.platform === 'dy');
                 setTasks(allTasks);
                 localStorage.setItem('tasks', JSON.stringify(allTasks));
             } else {
-                setTasks(modifiedTaskList);
-                localStorage.setItem('tasks', JSON.stringify(modifiedTaskList));
+                const filteredTasks = modifiedTaskList.filter(task => task.platform === 'dy');
+                setTasks(filteredTasks);
+                localStorage.setItem('tasks', JSON.stringify(filteredTasks));
             }
             setTotalTask(totalTask);
         } catch (error) {

@@ -29,7 +29,8 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
     const getCheckedOptions = () => {
         try {
             const storedOptions = localStorage.getItem('checkedOptions');
-            return storedOptions ? JSON.parse(storedOptions) : ['dy'];
+            const options = storedOptions ? JSON.parse(storedOptions) : ['dy'];
+            return options.filter(opt => opt !== 'xhs');
         } catch (error) {
             console.error('Error accessing localStorage:', error);
             localStorage.setItem('checkedOptions', JSON.stringify(['dy']))
@@ -148,14 +149,14 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
                         const message = {
                             action: 'openSearch',
                             query: val.value,  // 使用val.value而不是leadKeyword
-                            platform: option === 'dy' ? '抖音' : '小红书'
+                            platform: '抖音'
                         };
                         if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
                             chrome.runtime.sendMessage(downloadButton.innerText, message, (response) => {
                                 if (response && response.status === 'success') {
-                                    MessagePlugin.success(`已打开${option === 'dy' ? '抖音' : '小红书'}搜索链接`);
+                                    MessagePlugin.success(`已打开搜索链接`);
                                 } else {
-                                    MessagePlugin.error(`打开${option === 'dy' ? '抖音' : '小红书'}搜索链接失败`);
+                                    MessagePlugin.error(`打开搜索链接失败`);
                                 }
                             });
                         } else {
@@ -165,14 +166,14 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
                     const inputValueMessage = {
                         action: 'openSearch',
                         query: inputValue,  // 使用 inputValue
-                        platform: option === 'dy' ? '抖音' : '小红书'
+                        platform: '抖音'
                     };
                     if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.sendMessage) {
                         chrome.runtime.sendMessage(downloadButton.innerText, inputValueMessage, (response) => {
                             if (response && response.status === 'success') {
-                                MessagePlugin.success(`已打开${option === 'dy' ? '抖音' : '小红书'}搜索链接`);
+                                MessagePlugin.success(`已打开搜索链接`);
                             } else {
-                                MessagePlugin.error(`打开${option === 'dy' ? '抖音' : '小红书'}搜索链接失败`);
+                                MessagePlugin.error(`打开搜索链接失败`);
                             }
                         });
                     } else {
@@ -271,53 +272,53 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
         };
 
         const processParsedData = async (data, keyword) => {
-            const xhsShortLinks = [];
+            // const xhsShortLinks = [];
             const dyShortLinks = [];
             const dyLongLinks = [];
-            const xhsLongLinks = [];
+            // const xhsLongLinks = [];
 
             data.forEach(row => {
                 row.forEach(cell => {
                     if (typeof cell === 'string' && cell.startsWith('http')) {
-                        if (cell.includes('xhslink.com')) {
-                            xhsShortLinks.push(cell);
-                        } else if (cell.includes('v.douyin.com')) {
+                        // if (cell.includes('xhslink.com')) {
+                        //     xhsShortLinks.push(cell);
+                        /* } else */ if (cell.includes('v.douyin.com')) {
                             dyShortLinks.push(cell);
                         } else if (cell.match(/video\/(\d+)/) || cell.match(/douyin.com\/video\/(\d+)/)) {
                             dyLongLinks.push(cell);
-                        } else if (cell.includes('xiaohongshu.com')) {
-                            xhsLongLinks.push(cell);
+                        // } else if (cell.includes('xiaohongshu.com')) {
+                        //     xhsLongLinks.push(cell);
                         }
                     }
                 });
             });
 
-            if (xhsShortLinks.length > 0) {
-                const data = await postshortToLongLinks({ urls: xhsShortLinks });
-                xhsLongLinks.push(...data.data.urls);
-            }
+            // if (xhsShortLinks.length > 0) {
+            //     const data = await postshortToLongLinks({ urls: xhsShortLinks });
+            //     xhsLongLinks.push(...data.data.urls);
+            // }
             if (dyShortLinks.length > 0) {
                 const data = await postshortToLongLinks({ urls: dyShortLinks });
                 dyLongLinks.push(...data.data.urls);
             }
-            if (xhsLongLinks.length > 0) {
-                const xhsIds = xhsLongLinks.map(link => {
-                    const matchSearchResult = link.match(/search_result\/([a-zA-Z0-9]+)/);
-                    const matchExplore = link.match(/explore\/([a-zA-Z0-9]+)/);
-                    const matchDiscoveryItem = link.match(/discovery\/item\/([a-zA-Z0-9]+)/);
-                    return matchSearchResult ? matchSearchResult[1]
-                        : matchExplore ? matchExplore[1]
-                            : matchDiscoveryItem ? matchDiscoveryItem[1]
-                                : null;
-                }).filter(id => id !== null);
+            // if (xhsLongLinks.length > 0) {
+            //     const xhsIds = xhsLongLinks.map(link => {
+            //         const matchSearchResult = link.match(/search_result\/([a-zA-Z0-9]+)/);
+            //         const matchExplore = link.match(/explore\/([a-zA-Z0-9]+)/);
+            //         const matchDiscoveryItem = link.match(/discovery\/item\/([a-zA-Z0-9]+)/);
+            //         return matchSearchResult ? matchSearchResult[1]
+            //             : matchExplore ? matchExplore[1]
+            //                 : matchDiscoveryItem ? matchDiscoveryItem[1]
+            //                     : null;
+            //     }).filter(id => id !== null);
 
-                const back_data = {
-                    platform: 'xhs',
-                    keyword,
-                    ids: xhsIds,
-                };
-                postCommentCrawl(back_data);//TODO:为什么这里还有爬取
-            }
+            //     const back_data = {
+            //         platform: 'xhs',
+            //         keyword,
+            //         ids: xhsIds,
+            //     };
+            //     postCommentCrawl(back_data);//TODO:为什么这里还有爬取
+            // }
             if (dyLongLinks.length > 0) {
                 const dyIds = dyLongLinks.map(link => {
                     const matchVideo = link.match(/video\/(\d+)/);
@@ -495,16 +496,16 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
                     }}>
                         搜索
                     </Button>
-                    <Space>
+                    {/* <Space>
                         <Checkbox.Group
                             options={[
                                 { label: '抖音', value: 'dy' },
-                                { label: '小红书', value: 'xhs' },
+                                // { label: '小红书', value: 'xhs' },
                             ]}
                             value={checkedOptions}
                             onChange={handleCheckboxChange}
                         />
-                    </Space>
+                    </Space> */}
                 </Space>
             </div>
             <Space direction="vertical" style={{ width: '100%', textAlign: "center" }}>

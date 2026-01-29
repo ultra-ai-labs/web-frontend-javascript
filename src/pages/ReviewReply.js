@@ -290,7 +290,7 @@ export default function ReviewReply({tasks, getLocalStorageData}) {
                         <Space style={{width: '100%'}} align="center" direction="vertical">
                             <Row style={{width: '100%', justifyContent: 'space-between'}} align="center">
                                 <Row style={{height: "1px"}}>
-                                    {curTask ? platformIconMap[curTask.platform] : ""}
+                                    {/* {curTask ? platformIconMap[curTask.platform] : ""} */}
                                     <h2>&nbsp;{curTask ? `${curTask.keyword} ${marketingNum}个意向` : ''}</h2>
                                 </Row>
                                 <Popconfirm
@@ -387,12 +387,12 @@ export default function ReviewReply({tasks, getLocalStorageData}) {
                         </Space>
                     </Space>
                     <Space>
-                        <Loading loading={analysisLoading} text="拼命加载中..." size="small">
+                        {/* <Loading loading={analysisLoading} text="拼命加载中..." size="small">
                             <ReplyIntentorSatisfaction
                                 setAnalysisLoading={setAnalysisLoading} taskId={curTaskId}
                                 satisfactionData={satisfactionData} dissatisfactionData={dissatisfactionData}
                                 questionData={questionData}/>
-                        </Loading>
+                        </Loading> */}
                     </Space>
                 </Space>
                 <Space style={{width: "83vw"}}>
