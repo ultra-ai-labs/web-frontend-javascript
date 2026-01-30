@@ -1,13 +1,13 @@
 const domainName = window.location.hostname;
-let loginService = "http://localhost:3001"
-let normalServiceUrl = "http://localhost:3001"
-let chatServiceUrl = "http://127.0.0.1:3010"
-let modelServiceUrl = 'https://zg-cloud-model-service.replit.app';
-let wxpayServiceUrl = 'https://wx-pay-116838-7-1320884641.sh.run.tcloudbase.com'
-let goBackServiceUrl = 'https://golang-qo9o-116838-7-1320884641.sh.run.tcloudbase.com'
+let loginService = process.env.REACT_APP_API_URL
+let normalServiceUrl = process.env.REACT_APP_API_URL
+let chatServiceUrl = process.env.REACT_APP_CHAT_URL
+let modelServiceUrl = process.env.REACT_APP_MODEL_SERVICE_URL
+let wxpayServiceUrl = process.env.REACT_APP_WXPAY_URL
+let goBackServiceUrl = process.env.REACT_APP_GOBACK_URL
 
-if (domainName === "localhost" || domainName === "dev.zcloudapp.com") {
-    normalServiceUrl = "http://localhost:3001"
+if (!loginService || !normalServiceUrl || !chatServiceUrl || !modelServiceUrl || !wxpayServiceUrl || !goBackServiceUrl) {
+    console.error("Missing Environment Variables! Please check .env file.");
 }
 
 export async function login(username, password) {

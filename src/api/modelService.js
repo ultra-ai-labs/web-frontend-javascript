@@ -1,9 +1,13 @@
 import CryptoJS from 'crypto-js';
-let modelServiceUrl = 'https://api.coze.cn/open_api/v2/chat';
-let myToken = 'pat_URJWHQUzZqCnNRLV3oEYQCt44t4w3QYezRkAhtFzI9SodwzWUgAciOptMhMkT3im'
+let modelServiceUrl = process.env.REACT_APP_COZE_API_URL
+let myToken = process.env.REACT_APP_COZE_TOKEN
 const chatbotMap = {
-    "keyword": "7398469657676070947",
-    "template": "7588974730418520115"
+    "keyword": process.env.REACT_APP_COZE_BOT_ID_KEYWORD,
+    "template": process.env.REACT_APP_COZE_BOT_ID_TEMPLATE
+}
+
+if (!modelServiceUrl || !myToken || !chatbotMap.keyword || !chatbotMap.template) {
+    console.error("Missing Model Service Environment Variables! Please check .env file.");
 }
 // 检查localStorage中是否已经存在user_id
 const checkAndGenerateUserId = () => {
