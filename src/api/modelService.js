@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
 let modelServiceUrl = 'https://api.coze.cn/open_api/v2/chat';
-let myToken = 'pat_URJWHQUzZqCnNRLV3oEYQCt44t4w3QYezRkAhtFzI9SodwzWUgAciOptMhMkT3im'
+let myToken = 'pat_KP6TgYDYd9bwGtzCVKwkUJ7JNJUr0sUay0CYrYJANxe62e6Yil4CjCl95rT3yr0W'
 const chatbotMap = {
     "keyword": "7398469657676070947",
     "template": "7588974730418520115"
