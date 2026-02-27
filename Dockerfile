@@ -20,7 +20,7 @@ COPY src ./src
 ARG REACT_APP_API_URL
 ENV REACT_APP_API_URL=${REACT_APP_API_URL}
 # Increase memory limit for the build
-ENV NODE_OPTIONS=--max-old-space-size=4096
+ENV NODE_OPTIONS=--max-old-space-size=2048
 ENV CI=true
 ENV GENERATE_SOURCEMAP=false
 RUN npm run build
