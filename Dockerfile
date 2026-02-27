@@ -12,11 +12,15 @@ RUN if [ -f package-lock.json ]; then \
 			npm install --silent; \
 		fi
 
-# Copy source and build
-COPY . .
+# Copy source files
+COPY public ./public
+COPY src ./src
+
 # Allow build-time injection of API URL
 ARG REACT_APP_API_URL
 ENV REACT_APP_API_URL=${REACT_APP_API_URL}
+# Increase memory limit for the build
+ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN npm run build
 
 # Production stage: serve with nginx
