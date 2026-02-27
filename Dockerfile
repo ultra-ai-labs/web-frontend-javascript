@@ -4,9 +4,8 @@ WORKDIR /app
 
 # Install dependencies. If package-lock.json is missing fall back to `npm install`.
 # Copy package.json first to leverage Docker layer caching.
-COPY package.json ./
-# copy package-lock.json if present (will be ignored if missing)
-COPY package-lock.json ./ 2>/dev/null || true
+# Copy package files (will copy package-lock.json if present)
+COPY package*.json ./
 RUN if [ -f package-lock.json ]; then \
 			npm ci --silent; \
 		else \
