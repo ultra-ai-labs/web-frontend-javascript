@@ -11,13 +11,13 @@ if (domainName === "localhost" || domainName === "dev.zcloudapp.com") {
 }
 
 export async function login(username, password) {
+    const body = new URLSearchParams();
+    body.append('username', username);
+    body.append('password', password);
 
-    return fetch(`${loginService}/login?username=${username}&password=${password}`, {
+    return fetch(`${loginService}/login`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        // body: JSON.stringify(requestData),
+        body,
     }).then(response => {
         if (response.status !== 200) {
             throw new Error('Network response was not ok');
