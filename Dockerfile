@@ -2,9 +2,16 @@
 FROM node:18-alpine AS build
 WORKDIR /app
 
-# Install dependencies (use npm ci for reproducible builds)
-COPY package.json package-lock.json ./
-RUN npm ci --silent
+# Install dependencies. If package-lock.json is missing fall back to `npm install`.
+# Copy package.json first to leverage Docker layer caching.
+COPY package.json ./
+# copy package-lock.json if present (will be ignored if missing)
+COPY package-lock.json ./ 2>/dev/null || true
+RUN if [ -f package-lock.json ]; then \
+			npm ci --silent; \
+		else \
+			npm install --silent; \
+		fi
 
 # Copy source and build
 COPY . .
