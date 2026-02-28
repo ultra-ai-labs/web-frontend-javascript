@@ -11,6 +11,12 @@ services:
     restart: always
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      # 挂载Let's Encrypt证书到容器
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      # 如果需要更新nginx配置，可以挂载配置文件
+      # - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     env_file:
       - .env
     healthcheck:
