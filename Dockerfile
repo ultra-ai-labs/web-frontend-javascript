@@ -16,9 +16,11 @@ RUN if [ -f package-lock.json ]; then \
 COPY public ./public
 COPY src ./src
 
-# Allow build-time injection of API URL
+# Allow build-time injection of frontend env vars
 ARG REACT_APP_API_URL
+ARG REACT_APP_CHAT_URL
 ENV REACT_APP_API_URL=${REACT_APP_API_URL}
+ENV REACT_APP_CHAT_URL=${REACT_APP_CHAT_URL}
 # Increase memory limit for the build
 ENV NODE_OPTIONS=--max-old-space-size=1224
 ENV CI=false
