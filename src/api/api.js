@@ -5,7 +5,7 @@ const normalizeBaseUrl = (url) => (url || '').replace(/\/+$/, '');
 const apiBaseUrl = normalizeBaseUrl(process.env.REACT_APP_API_URL || defaultApiUrl);
 let loginService = apiBaseUrl;
 let normalServiceUrl = apiBaseUrl;
-let chatServiceUrl = normalizeBaseUrl(process.env.REACT_APP_CHAT_URL);
+let chatServiceUrl = process.env.REACT_APP_CHAT_URL
 let modelServiceUrl = process.env.REACT_APP_MODEL_SERVICE_URL;
 let wxpayServiceUrl = process.env.REACT_APP_WXPAY_URL ;
 let goBackServiceUrl = process.env.REACT_APP_GOBACK_URL;
