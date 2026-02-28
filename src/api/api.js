@@ -1,14 +1,14 @@
-const domainName = window.location.hostname;
-let loginService = "http://43.161.246.45:3001"
-let normalServiceUrl = "http://43.161.246.45:3001"
-let chatServiceUrl = "http://127.0.0.1:3010"
-let modelServiceUrl = 'https://zg-cloud-model-service.replit.app';
-let wxpayServiceUrl = 'https://wx-pay-116838-7-1320884641.sh.run.tcloudbase.com'
-let goBackServiceUrl = 'https://golang-qo9o-116838-7-1320884641.sh.run.tcloudbase.com'
+const protocol = window.location.protocol;
+const defaultApiUrl = protocol === 'https:' ? `${window.location.origin}/api` : "http://43.161.246.45:3001";
+const normalizeBaseUrl = (url) => (url || '').replace(/\/+$/, '');
 
-if (domainName === "localhost" || domainName === "dev.zcloudapp.com") {
-    normalServiceUrl = "http://43.161.219.41:3001"
-}
+const apiBaseUrl = normalizeBaseUrl(process.env.REACT_APP_API_URL || defaultApiUrl);
+let loginService = apiBaseUrl;
+let normalServiceUrl = apiBaseUrl;
+let chatServiceUrl = normalizeBaseUrl(process.env.REACT_APP_CHAT_URL);
+let modelServiceUrl = process.env.REACT_APP_MODEL_SERVICE_URL;
+let wxpayServiceUrl = process.env.REACT_APP_WXPAY_URL ;
+let goBackServiceUrl = process.env.REACT_APP_GOBACK_URL;
 
 export async function login(username, password) {
     const body = new URLSearchParams();
