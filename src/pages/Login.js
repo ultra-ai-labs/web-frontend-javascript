@@ -39,7 +39,7 @@ function Login() {
 
     return (
         <div style={{
-            backgroundImage: 'url("https://picx.zhimg.com/70/v2-52dbe8bdb0e4854c1e5bd39ff75a68d6_1440w.avis?source=172ae18b&biz_tag=Post")',
+            backgroundImage: `url("${process.env.REACT_APP_LOGIN_BG_IMAGE_URL}")`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             height: '100vh',

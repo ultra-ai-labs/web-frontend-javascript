@@ -177,7 +177,7 @@ export default function ReviewReply({tasks, getLocalStorageData}) {
                 <Space align="center">
                     <p>请下载安装私信支持程序（如已下载请运行程序）</p>
                     <Button theme="primary" variant="text"
-                            onClick={() => window.open('https://pan.baidu.com/s/17rfrGGTRQYcdkyQwDPVjMg?pwd=ziui', '_blank')}>
+                            onClick={() => window.open(process.env.REACT_APP_MESSAGE_PROGRAM_DOWNLOAD_URL, '_blank')}>
                         下载程序
                     </Button>
                 </Space>

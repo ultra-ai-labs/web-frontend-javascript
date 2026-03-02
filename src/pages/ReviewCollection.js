@@ -456,7 +456,7 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
                             >
                                 <Tooltip content={<div style={{ display: 'flex', alignItems: 'center' }}>
                                     <Tooltip content={<img
-                                        src="https://pica.zhimg.com/70/v2-3f265690b25be5a741622eef49311929_1440w.avis?source=172ae18b&biz_tag=Post"
+                                        src={process.env.REACT_APP_UPLOAD_FORMAT_IMAGE_URL}
                                         alt="上传格式" style={{ width: '400px', height: 'auto' }} />} theme="light">
                                         <span style={{
                                             marginLeft: '10px',

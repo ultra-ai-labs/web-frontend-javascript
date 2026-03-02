@@ -223,7 +223,8 @@ const IntentorTable = ({ userLinkList, total, curMarketingTaskId, taskId, platfo
 
             const response = await getXhsApi(id);
             if (response.code === 200 && response.data !== null) {
-                const xhsLink = 'https://www.xiaohongshu.com/explore/' + response.data.explore + "?xsec_token=" + response.data.xsec_token + '&xsec_source=pc_search'
+                const xhsBaseUrl = process.env.REACT_APP_XHS_BASE_URL;
+                const xhsLink = xhsBaseUrl + response.data.explore + "?xsec_token=" + response.data.xsec_token + '&xsec_source=pc_search'
                 window.open(xhsLink, '_blank');
 
             }

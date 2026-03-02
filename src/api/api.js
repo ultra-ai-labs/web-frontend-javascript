@@ -1,5 +1,5 @@
 const protocol = window.location.protocol;
-const defaultApiUrl = protocol === 'https:' ? `${window.location.origin}/api` : "http://43.161.246.45:3001";
+const defaultApiUrl = `${window.location.origin}/api`;
 const normalizeBaseUrl = (url) => (url || '').replace(/\/+$/, '');
 
 const apiBaseUrl = normalizeBaseUrl(process.env.REACT_APP_API_URL || defaultApiUrl);

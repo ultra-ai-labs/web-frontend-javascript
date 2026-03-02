@@ -1,7 +1,7 @@
 // src/components/CollectionInstructions.js
 import React, { useState, useEffect, useRef } from 'react';
 
-const EXTENSION_URL = 'https://iry-1256349444.cos.ap-guangzhou.myqcloud.com/%E5%86%85%E5%AE%B9%E6%94%B6%E9%9B%86%E6%8F%92%E4%BB%B6.zip';
+const EXTENSION_URL = process.env.REACT_APP_EXTENSION_DOWNLOAD_URL;
 const validVersion = ['1.7']
 
 const CollectionInstructions = () => {
@@ -62,7 +62,7 @@ const CollectionInstructions = () => {
 
         }}>
             <h3>使用评论收集功能推荐使用Windows10/11系统电脑，Edge或Chrome浏览器，下载安装<span style={{ color: '#165DFF' }}>最新的</span>评论收集插件，注意有原来的插件要删除，弹出此提示说明插件有更新</h3>
-            <p>安装或更新收集插件视频：<a href={"https://xcn9f50y4vw5.feishu.cn/wiki/Y26hwDUgAioiDzkx7CbcZFC5n1b#share-ZPBed4YFSolUfMxASrvc65zJn8g"} target="_blank" rel="noreferrer">查看视频教程</a></p>
+            <p>安装或更新收集插件视频：<a href={process.env.REACT_APP_EXTENSION_TUTORIAL_URL} target="_blank" rel="noreferrer">查看视频教程</a></p>
             <p>1.点击右侧下载 <a href={EXTENSION_URL} download="智能线索插件.zip">.zip文件</a> 并解压缩，得到插件的文件夹，注意安装完成后也不要移动和删除解压后的文件夹</p>
             <p>2.打开 Edge或Chrome 浏览器，复制 <code>chrome://extensions</code> 并粘贴到地址栏中，进入扩展设置。</p>
             <p>3.在扩展管理页面的右上角，打开“开发者模式”。</p>

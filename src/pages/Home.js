@@ -196,7 +196,7 @@ function Home() {
                                 <Row style={{marginTop: "4px"}}>
                                     <span
                                         style={{color: '#3491FA', cursor: 'pointer'}}
-                                        onClick={() => window.open('https://xcn9f50y4vw5.feishu.cn/wiki/Y26hwDUgAioiDzkx7CbcZFC5n1b?from=from_copylink', '_blank')}
+                                        onClick={() => window.open(process.env.REACT_APP_DOCS_URL, '_blank')}
                                     >使用文档</span>
                                     <span style={{
                                         color: userSubscribeInfo.package_type === "个人会员" ? "#366EF4" :

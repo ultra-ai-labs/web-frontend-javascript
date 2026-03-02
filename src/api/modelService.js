@@ -1,9 +1,9 @@
 import CryptoJS from 'crypto-js';
-let modelServiceUrl = 'https://api.coze.cn/open_api/v2/chat';
-let myToken = 'pat_KP6TgYDYd9bwGtzCVKwkUJ7JNJUr0sUay0CYrYJANxe62e6Yil4CjCl95rT3yr0W'
+let modelServiceUrl = process.env.REACT_APP_COZE_API_URL;
+let myToken = process.env.REACT_APP_COZE_TOKEN;
 const chatbotMap = {
-    "keyword": "7398469657676070947",
-    "template": "7588974730418520115"
+    "keyword": process.env.REACT_APP_COZE_BOT_ID_KEYWORD,
+    "template": process.env.REACT_APP_COZE_BOT_ID_TEMPLATE
 }
 // 检查localStorage中是否已经存在user_id
 const checkAndGenerateUserId = () => {
