@@ -192,6 +192,7 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
     };
 
     const postCommentCrawl = (hiddenData) => {
+        console.log('🚀 开始处理收集任务，原始数据:', hiddenData);
         const { ids, keyword, platform, tokens, titles } = { ...hiddenData };
 
         // 构建新的数据结构
@@ -206,14 +207,17 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
             platform,
             keyword
         }
-        console.log(back_data)
+        console.log('📤 发送到后端的数据:', back_data);
         postCommentCrawlApi(back_data)
-            .then(() => {
+            .then((response) => {
+                console.log('✅ 后端响应成功:', response);
                 fetchTasks(); // 任务添加成功后获取最新任务列表
+                console.log('🔄 正在刷新任务列表...');
                 MessagePlugin.success("任务添加成功！");
             })
             .catch((error) => {
-                console.error('收集评论请求失败:', error);
+                console.error('❌ 收集评论请求失败:', error);
+                MessagePlugin.error(`请求失败: ${error.message || '未知错误'}`);
             });
         if (tokens && tokens.length > 0) {
             const requests = tokens.map(token =>
@@ -362,10 +366,12 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
     useEffect(() => {
         const observer = new MutationObserver((mutations) => {
             mutations.forEach(() => {
-                // console.log('DOM changed:', mutation);
-                // console.log('hiddenDataContainer innerText:', hiddenDataContainerRef.current.innerText);
+                console.log('👁️ 检测到 hiddenDataContainer DOM 变化');
                 const newText = hiddenDataContainerRef.current.innerText;
-                setHiddenDataText(newText);
+                console.log('📝 新的数据文本:', newText);
+                if (newText && newText.trim() !== '') {
+                    setHiddenDataText(newText);
+                }
             });
         });
 
@@ -375,8 +381,9 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
             hiddenDataContainerRef.current = document.querySelector('#hiddenDataContainer');
             if (hiddenDataContainerRef.current) {
                 observer.observe(hiddenDataContainerRef.current, config);
-                // console.log('Observer started');
+                console.log('✅ Observer 已启动，正在监听 hiddenDataContainer');
             } else {
+                console.log('⏳ hiddenDataContainer 未找到，500ms后重试...');
                 // 如果元素还不存在，每隔500毫秒检查一次
                 setTimeout(checkElement, 500);
             }
@@ -390,12 +397,20 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
 
     useEffect(() => {
         if (!isCollectAbled) {
+            console.log('❌ 收集被禁用 - 配额可能已用完');
+            MessagePlugin.warning("配额已用完，无法收集评论");
             // setRemindChargeVisible(true)
         } else {
             if (hiddenDataText) {
-                const text = JSON.parse(hiddenDataText);
-                // console.log('Retrieved data from hidden div:', text);
-                postCommentCrawl(text);
+                console.log('✅ 收到插件数据:', hiddenDataText);
+                try {
+                    const text = JSON.parse(hiddenDataText);
+                    console.log('📦 解析后的数据:', text);
+                    postCommentCrawl(text);
+                } catch (error) {
+                    console.error('❌ 解析数据失败:', error);
+                    MessagePlugin.error("数据格式错误");
+                }
             }
         }
         // eslint-disable-next-line

@@ -118,10 +118,13 @@ const CollectionTaskTable = ({
     }, 0);
 
     useEffect(() => {
+        console.log(`📊 配额检查: 已用 ${nowLimit} / 总计 ${totalLimit}`);
         if (nowLimit >= totalLimit && totalLimit !== 0) {
+            console.log('❌ 配额已用完，禁用收集功能');
             setIsCollectAbled(false)
             setIsCollectabled(false)
         } else {
+            console.log('✅ 配额充足，启用收集功能');
             setIsCollectAbled(true)
             setIsCollectabled(true)
         }
