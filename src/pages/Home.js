@@ -70,39 +70,49 @@ function Home() {
     }
 
     const fetchTasks = async () => {
+        console.log('🔄 fetchTasks 被调用');
         try {
             await loadAllTasks()
+            console.log('✅ fetchTasks 完成');
         } catch (error) {
-            console.error("主页 fetching task list:", error);
+            console.error("❌ 主页 fetching task list 失败:", error);
         }
     };
 
     const loadAllTasks = async () => {
         try {
+            console.log('📡 开始加载任务列表...');
             const {data} = await getTaskListApi(0, 5); // 初始请求获取totalTask
+            console.log('📥 收到初始任务数据:', data);
             const totalTask = data.total;
             localStorage.setItem('totalTask', totalTask);
             const modifiedTaskList = data.task_list.map((task) => ({
                 ...task,
                 create_time: formatDate(task.create_time),
             }));
+            console.log(`📊 总任务数: ${totalTask}, 已加载: ${modifiedTaskList.length}`);
+            
             if (totalTask > 5) {
+                console.log(`📡 加载剩余 ${totalTask - 5} 个任务...`);
                 const {data: allData} = await getTaskListApi(5, totalTask - 5); // 请求剩余的任务
+                console.log('📥 收到剩余任务数据:', allData);
                 const allModifiedTaskList = allData.task_list.map((task) => ({
                     ...task,
                     create_time: formatDate(task.create_time),
                 }));
                 const allTasks = [...modifiedTaskList, ...allModifiedTaskList].filter(task => task.platform === 'dy');
+                console.log(`✅ 合并后任务总数: ${allTasks.length} (过滤后只保留 dy 平台)`);
                 setTasks(allTasks);
                 localStorage.setItem('tasks', JSON.stringify(allTasks));
             } else {
                 const filteredTasks = modifiedTaskList.filter(task => task.platform === 'dy');
+                console.log(`✅ 任务总数: ${filteredTasks.length} (过滤后只保留 dy 平台)`);
                 setTasks(filteredTasks);
                 localStorage.setItem('tasks', JSON.stringify(filteredTasks));
             }
             setTotalTask(totalTask);
         } catch (error) {
-            console.error("主页 loading all tasks:", error);
+            console.error("❌ 主页 loading all tasks 失败:", error);
         }
     };
 

@@ -211,8 +211,14 @@ function ReviewCollection({ tasks, fetchTasks, totalTask, userSubscribeInfo, han
         postCommentCrawlApi(back_data)
             .then((response) => {
                 console.log('✅ 后端响应成功:', response);
-                fetchTasks(); // 任务添加成功后获取最新任务列表
-                console.log('🔄 正在刷新任务列表...');
+                console.log('⏱️ 等待 500ms 后刷新任务列表...');
+                // 添加短暂延迟，确保后端任务已创建完成
+                setTimeout(() => {
+                    console.log('🔄 开始刷新任务列表...');
+                    fetchTasks().then(() => {
+                        console.log('✅ 任务列表刷新完成');
+                    });
+                }, 500);
                 MessagePlugin.success("任务添加成功！");
             })
             .catch((error) => {
