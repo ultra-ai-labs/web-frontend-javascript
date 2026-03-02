@@ -251,10 +251,9 @@ const UserManagement = () => {
                                         <td style={tdStyle}>{u.user_id}</td>
                                         <td style={tdStyle}>{u.username || ''}</td>
                                         <td style={tdStyle}>{u.email || ''}</td>
+                                        <td style={tdStyle}>{u.total_quota != null ? u.total_quota : '—'}</td>
+                                        <td style={tdStyle}>{u.used_quota != null ? u.used_quota : '—'}</td>
                                         <td style={tdStyle}>{u.expire_time ? formatUnixToReadable(u.expire_time) + ' (' + u.expire_time + ')' : '—'}</td>
-                                                                                <td style={tdStyle}>{u.total_quota != null ? u.total_quota : '—'}</td>
-                                                                                <td style={tdStyle}>{u.used_quota != null ? u.used_quota : '—'}</td>
-                                                                                <td style={tdStyle}>{u.expire_time ? formatUnixToReadable(u.expire_time) + ' (' + u.expire_time + ')' : '—'}</td>
                                         <td style={tdStyle}>{u.create_time ? formatUnixToReadable(u.create_time) + ' (' + u.create_time + ')' : '—'}</td>
                                         <td style={tdStyle}>{u.update_time ? formatUnixToReadable(u.update_time) + ' (' + u.update_time + ')' : '—'}</td>
                                         <td style={tdStyle}>
