@@ -24,7 +24,7 @@ const platformMap = {
 
 export default function ReviewReply({tasks, getLocalStorageData}) {
     const initialTasks = getLocalStorageData("tasks", tasks) || tasks;
-    const [taskList, setTaskList] = useState(initialTasks.filter(task => task.analysis_state === 'finish'));
+    const [taskList, setTaskList] = useState(initialTasks.filter(task => task.analysis_state && task.analysis_state !== 'initial'));
     const [curMarketingTaskId, setCurMarketingTaskId] = useState([]);//正在私信的任务列表
     const [curTaskId, setCurTaskId] = useState(localStorage.getItem("curTaskId") || taskList[0]?.task_id || "");//现在左栏选中的任务
     // eslint-disable-next-line

@@ -221,25 +221,12 @@ const ReviewAnalyze = ({ tasks, selectedTask, fetchTasks, SeclectedReply, userSu
                                 }
                             });
 
-                            // 判断 package_type 和当前页码
                             let commentContent;
                             let userNickname;
-                            if (userSubscribeInfo.package_type === '试用会员') {
-                                if (currentPage <= 2) {
-                                    commentContent = platform.current === 'xhs'
-                                        ? <a href={`#${index}`} onClick={(e) => handleLinkClick(e, comment.内容链接)}>{comment.评论内容}</a>
-                                        : <a href={comment.内容链接} target="_blank" rel="noreferrer">{comment.评论内容}</a>;
-                                    userNickname = <a href={comment.用户链接} target="_blank" rel="noreferrer">{comment.用户昵称}</a>;
-                                } else {
-                                    commentContent = <span>{comment.评论内容}</span>;
-                                    userNickname = <span>{comment.用户昵称}</span>;
-                                }
-                            } else {
-                                commentContent = platform.current === 'xhs'
-                                    ? <a href={`#${index}`} onClick={(e) => handleLinkClick(e, comment.内容链接)}>{comment.评论内容}</a>
-                                    : <a href={comment.内容链接} target="_blank" rel="noreferrer">{comment.评论内容}</a>;
-                                userNickname = <a href={comment.用户链接} target="_blank" rel="noreferrer">{comment.用户昵称}</a>;
-                            }
+                            commentContent = platform.current === 'xhs'
+                                ? <a href={`#${index}`} onClick={(e) => handleLinkClick(e, comment.内容链接)}>{comment.评论内容}</a>
+                                : <a href={comment.内容链接} target="_blank" rel="noreferrer">{comment.评论内容}</a>;
+                            userNickname = <a href={comment.用户链接} target="_blank" rel="noreferrer">{comment.用户昵称}</a>;
 
                             return {
                                 index: index + 1 + (currentPage - 1) * pageSize,
