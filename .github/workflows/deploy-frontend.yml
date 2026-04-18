@@ -22,5 +22,6 @@ jobs:
             export BRANCH="main"
             export FORCE_GIT_SYNC="1"
             export NO_CACHE_BUILD="0"
+            export NODE_MAX_OLD_SPACE_SIZE="768"
             chmod +x "${PROJECT_DIR}/scripts/deploy_frontend.sh"
             "${PROJECT_DIR}/scripts/deploy_frontend.sh"

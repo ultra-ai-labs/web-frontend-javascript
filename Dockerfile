@@ -19,10 +19,11 @@ COPY src ./src
 # Allow build-time injection of frontend env vars
 ARG REACT_APP_API_URL
 ARG REACT_APP_CHAT_URL
+ARG NODE_MAX_OLD_SPACE_SIZE=768
 ENV REACT_APP_API_URL=${REACT_APP_API_URL}
 ENV REACT_APP_CHAT_URL=${REACT_APP_CHAT_URL}
-# Increase memory limit for the build
-ENV NODE_OPTIONS=--max-old-space-size=1224
+# Cap Node build memory to fit smaller servers.
+ENV NODE_OPTIONS=--max-old-space-size=${NODE_MAX_OLD_SPACE_SIZE}
 ENV CI=false
 ENV GENERATE_SOURCEMAP=false
 RUN npm run build
