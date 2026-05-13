@@ -19,8 +19,9 @@ const UserManagement = () => {
     const [createForm, setCreateForm] = useState({ user_id: '', username: '', email: '', password: '', expire_time: '' });
 
     const saveAdminPwd = (pwd) => {
-        setAdminPwd(pwd);
-        try { localStorage.setItem('admin_pwd', pwd); } catch (e) {}
+        const normalizedPwd = String(pwd || '').trim();
+        setAdminPwd(normalizedPwd);
+        try { localStorage.setItem('admin_pwd', normalizedPwd); } catch (e) {}
     };
 
     const handleFetch = async () => {

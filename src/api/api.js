@@ -367,18 +367,19 @@ export async function updateUserInfosApi(data) {
 // Admin user management APIs (use x-admin-password header)
 async function adminFetch(url, options = {}, adminPwd) {
     try {
+        const normalizedAdminPwd = String(adminPwd || '').trim();
         options.headers = {
             ...(options.headers || {}),
-            'x-admin-password': adminPwd || ''
+            'x-admin-password': normalizedAdminPwd
         };
         if (!options.headers['Content-Type'] && options.method && options.method !== 'GET') {
             options.headers['Content-Type'] = 'application/json';
         }
         const response = await fetch(url, options);
-        if (response.status === 401) {
-            return { status: 401, msg: 'unauthorized' };
+        const data = await response.json().catch(() => null);
+        if (!response.ok) {
+            return data || { status: response.status, msg: response.statusText || 'request failed' };
         }
-        const data = await response.json();
         return data;
     } catch (err) {
         console.error('adminFetch error', err);
